@@ -1,0 +1,66 @@
+name: trax-lrs
+
+services:
+  db:
+    image: mysql:8.3 # Imposed by trax-lrs 3.0
+    environment:
+      MYSQL_ROOT_PASSWORD: vWa6YJwBc2fMTugLGymxK5jCH
+      MYSQL_DATABASE: traxlrs
+      MYSQL_USER: traxusr
+      MYSQL_PASSWORD: k46nXNyDL9t32YCj
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - trax-net
+    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin -uroot -p$${MYSQL_ROOT_PASSWORD} -h localhost ping",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+  trax:
+    image: teatime/traxlrs
+    build:
+      context: ./images/trax
+      args:
+        - http_proxy=${HTTP_PROXY:-}
+        - https_proxy=${HTTPS_PROXY:-}
+        - no_proxy=${NO_PROXY:-}
+    depends_on:
+      db:
+       condition: service_healthy
+    environment:
+      APP_NAME: MY LRS
+      APP_ENV: local
+      APP_URL: http://localhost:8899
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: traxlrs
+      DB_USERNAME: traxusr
+      DB_PASSWORD: k46nXNyDL9t32YCj
+      # APP_KEY:
+      # APP_DEBUG=false
+      # DB_CONNECTION: mysql
+      ADMIN_MAIL: admin@mail.com
+      ADMIN_PASSWORD: thetotoro
+    volumes:
+      - trax-storage:/var/www/trax2/storage
+      - trax-cache:/var/www/trax2/bootstrap/cache
+    networks:
+      - trax-net
+    ports:
+      - "127.0.0.1:8899:80"
+    restart: always
+
+volumes:
+  db-data:
+  trax-storage:
+  trax-cache:
+
+networks:
+  trax-net:
