@@ -11,6 +11,9 @@ if [ ! -f ${flagfile} ]; then
   php artisan key:generate \
   && php artisan migrate \
   && (echo -ne "${ADMIN_MAIL}\n${ADMIN_PASSWORD}\n" | php artisan admin:create) \
+  && (echo "* * * * * cd ${PWD} && php artisan schedule:run >> /dev/null 2>&1" > current_cron) \
+  && crontab -u www-data current_cron \
+  && rm current_cron \
   && touch ${flagfile}
 
   if [ $? -ne 0 ]; then

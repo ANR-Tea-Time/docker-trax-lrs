@@ -58,11 +58,11 @@ RUN git config --global user.email "anonym@mail.com" \
   && git config --global user.name "Anne Onym"
 
 # Récupération trax-lrs
-RUN git clone https://github.com/trax-project/trax2-starter-lrs \
-  /var/www/trax2
+RUN git clone https://github.com/trax-project/trax3-starter-lrs \
+  /var/www/trax3
 
 # Changement de répertoire de travail
-WORKDIR /var/www/trax2
+WORKDIR /var/www/trax3
 
 # Installation via composer de trax
 # Changement de droits sur storage and bootstrap/cache
@@ -74,23 +74,23 @@ RUN composer install \
 # Copie des fichiers de conf apache et trax
 COPY trax-apache.conf /etc/apache2/sites-available/trax.conf
 COPY trax-php.ini /usr/local/etc/php/php.ini
-COPY trax.env /var/www/trax2/.env
-COPY start_trax.sh /var/www/trax2/start_trax.sh
+COPY trax.env /var/www/trax3/.env
+COPY start_trax.sh /var/www/trax3/start_trax.sh
 
 # droit exec sur start, desactivation du site par defaut,
 # activation du site trax et activation du mode rewrite
 RUN a2dissite 000-default.conf \
   && a2ensite trax.conf \
   && a2enmod rewrite \
-  && chmod 0555 /var/www/trax2/start_trax.sh
+  && chmod 0555 /var/www/trax3/start_trax.sh
 
 # Nettoyage
 RUN rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 # Déclaration du volumes de données (pour la perf)
-VOLUME /var/www/trax2/storage
+VOLUME /var/www/trax3/storage
 
 # Commande de départ: apache2
-CMD /var/www/trax2/start_trax.sh
+CMD /var/www/trax3/start_trax.sh
 
 
