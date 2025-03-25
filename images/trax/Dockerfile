@@ -56,7 +56,7 @@ RUN apt-get update \
 #  Configuration git global et création structures de dossier
 RUN git config --global user.email "anonym@mail.com" \
   && git config --global user.name "Anne Onym" \
-  && test -z "${http_proxy}" || (git config --global http.proxy ${http_proxy} && git config --global https.proxy ${https_proxy})
+  && test -z "${http_proxy}" || git config --global http.proxy ${http_proxy}
 
 # Récupération trax-lrs
 RUN git clone https://github.com/trax-project/trax3-starter-lrs \
